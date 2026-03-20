@@ -1,2 +1,2 @@
 # academics
-to store college related assignments or projects 
+To store college related assignments or projects 
