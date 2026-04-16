@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header>
+      <a class="logo" href="index.html">
+        <div class="logo-badge">SU</div>
+        <div class="logo-text">
+          <b>Silicon University</b>
+          <small>Complaint Portal</small>
+        </div>
+      </a>
+      <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="add.html">New Complaint</a>
+      </nav>
+    </header>
+    <hr />
+
+    <!-- MAIN -->
+    <main>
+      <h2>Raise Complaint</h2>
+      <!-- //# - submit to the samepage for timebeing , later to be used in backend -->
+      <form action="#" method="post">
+        <!-- name -->
+        <div class="form-group">
+          <label for="firstname">Name</label>
+          <input
+            name="name"
+            id="firstname"
+            type="text"
+            placeholder="Enter first name"
+          />
+        </div>
+        <!-- category -->
+        <div>
+          <label for="category">Category</label>
+          <select name="category" id="category">
+            <option value="">-- Select Category --</option>
+            <option value="hostel">Hostel</option>
+            <option value="academic">Academic</option>
+            <option value="canteen">Canteen</option>
+            <option value="gym">Gym</option>
+            <option value="infrastructure">Infrastructure</option>
+          </select>
+        </div>
+        <!-- title -->
+        <div>
+          <label for="Title">Title</label>
+          <input
+            name="title"
+            id="Title"
+            type="text"
+            placeholder="complaint title"
+          />
+        </div>
+        <!-- description -->
+        <div>
+          <label for="Description">Description</label><br />
+          <textarea
+            name="description"
+            id="Description"
+            rows="10"
+            cols="40"
+            placeholder="Briefly describe the issue"
+          ></textarea>
+        </div>
+        <button type="submit">submit complaint</button>
+      </form>
+    </main>
+    <hr />
+
+    <!-- FOOTER -->
+    <footer>
+      <h4>2026 Silicon University | m1 complaint portal</h4>
+      <p><em>&copy;All rights reserved</em></p>
+    </footer>
+  </body>
+</html>
