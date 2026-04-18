@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <!-- HEADER -->
@@ -81,5 +81,54 @@
       <h4>2026 Silicon University | m1 complaint portal</h4>
       <p><em>&copy;All rights reserved</em></p>
     </footer>
+
+    <!-- JS -->
+    <script>
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault(); // stop page reload
+
+        try {
+          // get input values
+          const name = document.querySelector("#firstname").value;
+          const category = document.querySelector("#category").value;
+          const title = document.querySelector("#Title").value;
+          const description = document.querySelector("#Description").value;
+
+          // send POST request
+          const response = await fetch(
+            "http://localhost:8080/complaintportalm1/addComplaint",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({
+                name: name,
+                category: category,
+                title: title,
+                description: description,
+              }),
+            },
+          );
+
+          const data = await response.json();
+          console.log("Added:", data);
+
+          // success message using DOM
+          const msg = document.createElement("p");
+          msg.textContent = "Complaint submitted successfully!";
+          msg.style.color = "green";
+
+          form.appendChild(msg);
+
+          // clear form
+          form.reset();
+        } catch (error) {
+          console.error("Error submitting complaint:", error);
+        }
+      });
+    </script>
   </body>
 </html>

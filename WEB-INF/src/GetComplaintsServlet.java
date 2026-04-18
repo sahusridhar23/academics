@@ -1,0 +1,43 @@
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+record Complaint(String name, String category, String title, String description) {
+}
+
+@WebServlet("/complaints")
+public class GetComplaintsServlet extends HttpServlet {
+
+    private static ArrayList<Complaint> complaints = new ArrayList<>();
+
+    static {
+        complaints.add(new Complaint("Sridhar", "Hostel", "Water issue", "No water in hostel"));
+        complaints.add(new Complaint("Rahul", "Canteen", "Food quality", "Food is bad"));
+    }
+
+    private Gson json = new Gson();
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+
+        String response = json.toJson(complaints);
+
+        PrintWriter out = res.getWriter();
+        out.println(response);
+    }
+
+    public static ArrayList<Complaint> getComplaints() {
+        return complaints;
+    }
+}

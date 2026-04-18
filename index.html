@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <!-- HEADER -->
@@ -34,7 +34,7 @@
           </div>
         </div>
 
-        <!-- complaints table -->
+        <!-- complaints list -->
         <div class="complaint-list">
           <div class="complaint-card">
             <h3>Broken Chair</h3>
@@ -60,5 +60,76 @@
       <h4>2026 Silicon University | m1 complaint portal</h4>
       <p><em>&copy;All rights reserved</em></p>
     </footer>
+
+    <!-- JS -->
+    <script>
+      async function loadComplaints() {
+        try {
+          const response = await fetch(
+            "http://localhost:8080/complaintportalm1/complaints",
+          );
+
+          // convert response → JSON
+          const data = await response.json();
+
+          console.log(data);
+
+          // select container
+          const container = document.querySelector(".complaint-list");
+
+          // clear old content
+          container.replaceChildren();
+
+          // loop through complaints
+          data.forEach((c) => {
+            const card = document.createElement("div");
+            card.classList.add("complaint-card");
+
+            // title
+            const title = document.createElement("h3");
+            title.textContent = c.title;
+
+            // name
+            const name = document.createElement("p");
+            const nameBold = document.createElement("b");
+            nameBold.textContent = "Name: ";
+            name.appendChild(nameBold);
+            name.appendChild(document.createTextNode(c.name));
+
+            // category
+            const category = document.createElement("p");
+            const categoryBold = document.createElement("b");
+            categoryBold.textContent = "Category: ";
+            category.appendChild(categoryBold);
+            category.appendChild(document.createTextNode(c.category));
+
+            // description
+            const description = document.createElement("p");
+            const descBold = document.createElement("b");
+            descBold.textContent = "Description: ";
+            description.appendChild(descBold);
+            description.appendChild(document.createTextNode(c.description));
+
+            // status
+            const status = document.createElement("span");
+            status.textContent = "Status: Pending";
+
+            // append all elements
+            card.appendChild(title);
+            card.appendChild(name);
+            card.appendChild(category);
+            card.appendChild(description);
+            card.appendChild(status);
+
+            container.appendChild(card);
+          });
+        } catch (error) {
+          console.error("Error fetching complaints:", error);
+        }
+      }
+
+      // run when page loads
+      loadComplaints();
+    </script>
   </body>
 </html>
