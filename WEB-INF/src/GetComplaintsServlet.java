@@ -10,6 +10,9 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+record Complaint(String name, String category, String title, String description) {
+}
+
 @WebServlet("/complaints")
 public class GetComplaintsServlet extends HttpServlet {
 
