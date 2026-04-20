@@ -45,7 +45,7 @@ Ensure the Gson library is present:
 WEB-INF/lib/gson-2.10.1.jar
 ```
 
-If missing, download [Gson 2.10.1](https://github.com/google/gson) and place it in the `WEB-INF/lib/` directory.
+If missing, download [Gson 2.10.1](https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar) and place it in the `WEB-INF/lib/` directory.
 
 ### Step 4: Compile Java Servlets
 
