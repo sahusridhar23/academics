@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 @WebServlet("/addComplaint")
 public class AddComplaintServlet extends HttpServlet {
@@ -27,8 +29,24 @@ public class AddComplaintServlet extends HttpServlet {
         // create the object (like before)
         Complaint complaint = new Complaint(name, category, title, description);
 
-        // add the complaint to the arraylist
-        GetComplaintsServlet.getComplaints().add(complaint);
+        // add the complaint
+        try {
+            Connection conn = DBconnection.getConnection();
+
+            String sql = "INSERT INTO complaints (name, category, title, description) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(1, name);
+            ps.setString(2, category);
+            ps.setString(3, title);
+            ps.setString(4, description);
+
+            ps.executeUpdate();
+
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // convert to json
         String response = json.toJson(complaint);// complaint OBJ -> JSON

@@ -9,19 +9,15 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 record Complaint(String name, String category, String title, String description) {
 }
 
 @WebServlet("/complaints")
 public class GetComplaintsServlet extends HttpServlet {
-
-    private static ArrayList<Complaint> complaints = new ArrayList<>();
-
-    static {
-        complaints.add(new Complaint("Sridhar", "Hostel", "Water issue", "No water in hostel"));
-        complaints.add(new Complaint("Rahul", "Canteen", "Food quality", "Food is bad"));
-    }
 
     private Gson json = new Gson();
 
@@ -31,13 +27,36 @@ public class GetComplaintsServlet extends HttpServlet {
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
 
+        ArrayList<Complaint> complaints = new ArrayList<>();
+
+        try {
+            Connection conn = DBconnection.getConnection();
+
+            String sql = "SELECT name, category, title, description FROM complaints";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Complaint c = new Complaint(
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("title"),
+                        rs.getString("description"));
+                complaints.add(c);
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String response = json.toJson(complaints);
 
         PrintWriter out = res.getWriter();
         out.println(response);
-    }
-
-    public static ArrayList<Complaint> getComplaints() {
-        return complaints;
     }
 }
