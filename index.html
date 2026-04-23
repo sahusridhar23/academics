@@ -3,62 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
+    <title>Dashboard | Silicon University Complaint Portal</title>
     <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <!-- HEADER -->
-    <header>
-      <a class="logo" href="index.html">
-        <div class="logo-badge">SU</div>
-        <div class="logo-text">
-          <b>Silicon University</b>
-          <small>Complaint Portal</small>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <img
+          src="sit.png"
+          alt="Silicon University logo"
+          class="brand-logo"
+        />
+        <div class="brand-text">
+          <span class="brand-title">Silicon University</span>
+          <span class="brand-sub">Complaint Portal</span>
         </div>
       </a>
-      <nav>
-        <a href="index.html">Dashboard</a>
+      <nav class="site-nav">
+        <a href="index.html" class="active">Dashboard</a>
         <a href="add.html">New Complaint</a>
       </nav>
     </header>
-    <hr />
 
     <!-- MAIN -->
-    <main>
-      <div class="container">
-        <!-- page title row -->
-        <div class="page-header">
-          <div>
-            <h1>All complaints</h1>
-            <p>Every complaint submited by Silicon University & staff.</p>
-          </div>
-        </div>
+    <main class="site-main">
+      <h2>All complaints</h2>
+      <p class="lead">Every complaint submitted by Silicon University &amp; staff.</p>
 
-        <!-- complaints list -->
-        <div class="complaint-list">
-          <div class="complaint-card">
-            <h3>Broken Chair</h3>
-            <p><b>Name:</b> Test User</p>
-            <p><b>Category:</b> Classroom</p>
-            <p><b>Description:</b> Chair is broken</p>
-            <span>Status: Pending</span>
-          </div>
-          <div class="complaint-card">
-            <h3>Broken Chair</h3>
-            <p><b>Name:</b> Test User</p>
-            <p><b>Category:</b> Classroom</p>
-            <p><b>Description:</b> Chair is broken</p>
-            <span>Status: Pending</span>
-          </div>
-        </div>
+      <div class="complaint-list">
+        <article class="complaint-card">
+          <h3>Broken Chair</h3>
+          <p><b>Name:</b> Test User</p>
+          <p><b>Category:</b> Classroom</p>
+          <p><b>Description:</b> Chair is broken</p>
+          <span class="status status-pending">Pending</span>
+        </article>
+
+        <article class="complaint-card">
+          <h3>Broken Chair</h3>
+          <p><b>Name:</b> Test User</p>
+          <p><b>Category:</b> Classroom</p>
+          <p><b>Description:</b> Chair is broken</p>
+          <span class="status status-pending">Pending</span>
+        </article>
       </div>
     </main>
-    <hr />
 
     <!-- FOOTER -->
-    <footer>
+    <footer class="site-footer">
       <h4>2026 Silicon University | m1 complaint portal</h4>
-      <p><em>&copy;All rights reserved</em></p>
+      <p><em>&copy; All rights reserved</em></p>
     </footer>
 
     <!-- JS -->
@@ -68,53 +63,45 @@
           const response = await fetch(
             "http://localhost:8080/complaintportalm1/complaints",
           );
-
-          // convert response → JSON
           const data = await response.json();
 
-          console.log(data);
-
-          // select container
           const container = document.querySelector(".complaint-list");
-
-          // clear old content
           container.replaceChildren();
 
-          // loop through complaints
           data.forEach((c) => {
-            const card = document.createElement("div");
+            const card = document.createElement("article");
             card.classList.add("complaint-card");
 
-            // title
             const title = document.createElement("h3");
             title.textContent = c.title;
 
-            // name
             const name = document.createElement("p");
             const nameBold = document.createElement("b");
             nameBold.textContent = "Name: ";
             name.appendChild(nameBold);
             name.appendChild(document.createTextNode(c.name));
 
-            // category
             const category = document.createElement("p");
             const categoryBold = document.createElement("b");
             categoryBold.textContent = "Category: ";
             category.appendChild(categoryBold);
             category.appendChild(document.createTextNode(c.category));
 
-            // description
             const description = document.createElement("p");
             const descBold = document.createElement("b");
             descBold.textContent = "Description: ";
             description.appendChild(descBold);
             description.appendChild(document.createTextNode(c.description));
 
-            // status
             const status = document.createElement("span");
-            status.textContent = "Status: Pending";
+            const statusText = c.status || "Pending";
+            status.classList.add("status");
+            const s = statusText.toLowerCase();
+            if (s.includes("resolved")) status.classList.add("status-resolved");
+            else if (s.includes("progress")) status.classList.add("status-progress");
+            else status.classList.add("status-pending");
+            status.textContent = statusText;
 
-            // append all elements
             card.appendChild(title);
             card.appendChild(name);
             card.appendChild(category);
@@ -128,7 +115,6 @@
         }
       }
 
-      // run when page loads
       loadComplaints();
     </script>
   </body>
