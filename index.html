@@ -10,11 +10,7 @@
     <!-- HEADER -->
     <header class="site-header">
       <a class="brand" href="index.html">
-        <img
-          src="sit.png"
-          alt="Silicon University logo"
-          class="brand-logo"
-        />
+        <img src="sit.png" alt="Silicon University logo" class="brand-logo" />
         <div class="brand-text">
           <span class="brand-title">Silicon University</span>
           <span class="brand-sub">Complaint Portal</span>
@@ -29,7 +25,9 @@
     <!-- MAIN -->
     <main class="site-main">
       <h2>All complaints</h2>
-      <p class="lead">Every complaint submitted by Silicon University &amp; staff.</p>
+      <p class="lead">
+        Every complaint submitted by Silicon University &amp; staff.
+      </p>
 
       <div class="complaint-list">
         <article class="complaint-card">
@@ -63,45 +61,60 @@
           const response = await fetch(
             "http://localhost:8080/complaintportalm1/complaints",
           );
+
+          // convert response → JSON
           const data = await response.json();
 
+          console.log(data);
+
+          // select container
           const container = document.querySelector(".complaint-list");
+
+          // clear old content
           container.replaceChildren();
 
+          // loop through complaints
           data.forEach((c) => {
             const card = document.createElement("article");
             card.classList.add("complaint-card");
 
+            // title
             const title = document.createElement("h3");
             title.textContent = c.title;
 
+            // name
             const name = document.createElement("p");
             const nameBold = document.createElement("b");
             nameBold.textContent = "Name: ";
             name.appendChild(nameBold);
             name.appendChild(document.createTextNode(c.name));
 
+            // category
             const category = document.createElement("p");
             const categoryBold = document.createElement("b");
             categoryBold.textContent = "Category: ";
             category.appendChild(categoryBold);
             category.appendChild(document.createTextNode(c.category));
 
+            // description
             const description = document.createElement("p");
             const descBold = document.createElement("b");
             descBold.textContent = "Description: ";
             description.appendChild(descBold);
             description.appendChild(document.createTextNode(c.description));
 
+            // status
             const status = document.createElement("span");
             const statusText = c.status || "Pending";
             status.classList.add("status");
             const s = statusText.toLowerCase();
             if (s.includes("resolved")) status.classList.add("status-resolved");
-            else if (s.includes("progress")) status.classList.add("status-progress");
+            else if (s.includes("progress"))
+              status.classList.add("status-progress");
             else status.classList.add("status-pending");
             status.textContent = statusText;
 
+            // append all elements
             card.appendChild(title);
             card.appendChild(name);
             card.appendChild(category);
@@ -115,6 +128,7 @@
         }
       }
 
+      // run when page loads
       loadComplaints();
     </script>
   </body>

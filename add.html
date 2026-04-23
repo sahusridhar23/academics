@@ -10,11 +10,7 @@
     <!-- HEADER -->
     <header class="site-header">
       <a class="brand" href="index.html">
-        <img
-          src="sit.png"
-          alt="Silicon University logo"
-          class="brand-logo"
-        />
+        <img src="sit.png" alt="Silicon University logo" class="brand-logo" />
         <div class="brand-text">
           <span class="brand-title">Silicon University</span>
           <span class="brand-sub">Complaint Portal</span>
@@ -31,7 +27,8 @@
       <div class="form-box">
         <h2>Raise Complaint</h2>
         <p class="info">
-          Fill in the details below and our team will review your complaint shortly.
+          Fill in the details below and our team will review your complaint
+          shortly.
         </p>
 
         <form id="complaintForm" novalidate>
@@ -91,42 +88,49 @@
 
     <!-- JS -->
     <script>
-      const form = document.getElementById("complaintForm");
+      const form = document.querySelector("form");
 
       form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const payload = {
-          name: form.name.value.trim(),
-          category: form.category.value,
-          title: form.title.value.trim(),
-          description: form.description.value.trim(),
-        };
-
-        // basic client-side validation
-        if (!payload.name || !payload.category || !payload.title || !payload.description) {
-          alert("Please fill in all fields.");
-          return;
-        }
+        e.preventDefault(); // stop page reload
 
         try {
-          const res = await fetch(
-            "http://localhost:8080/complaintportalm1/complaints",
+          // get input values
+          const name = document.querySelector("#name").value;
+          const category = document.querySelector("#category").value;
+          const title = document.querySelector("#title").value;
+          const description = document.querySelector("#description").value;
+
+          // send POST request
+          const response = await fetch(
+            "http://localhost:8080/complaintportalm1/addComplaint",
             {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({
+                name: name,
+                category: category,
+                title: title,
+                description: description,
+              }),
             },
           );
 
-          if (!res.ok) throw new Error("Failed to submit complaint");
+          const data = await response.json();
+          console.log("Added:", data);
 
-          alert("Complaint submitted successfully!");
+          // success message using DOM
+          const msg = document.createElement("p");
+          msg.textContent = "Complaint submitted successfully!";
+          msg.style.color = "green";
+
+          form.appendChild(msg);
+
+          // clear form
           form.reset();
-          window.location.href = "index.html";
-        } catch (err) {
-          console.error(err);
-          alert("Could not submit complaint. Please try again.");
+        } catch (error) {
+          console.error("Error submitting complaint:", error);
         }
       });
     </script>
