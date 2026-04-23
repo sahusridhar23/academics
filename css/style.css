@@ -157,6 +157,93 @@ body {
   background-color: #16a34a;
 }
 
+/* ---------- Form (for add.html) ---------- */
+.form-box {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px #00000022;
+  border-top: 6px solid #facc15;
+}
+
+.form-box h2 {
+  color: #1e40af;
+  margin-bottom: 5px;
+}
+
+.form-box .info {
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+  background-color: #f8fafc;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #1e40af;
+  outline: none;
+  background-color: #ffffff;
+}
+
+textarea {
+  height: 110px;
+  resize: vertical;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  background-color: #1e40af;
+  color: #ffffff;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.btn:hover {
+  background-color: #facc15;
+  color: #1e40af;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e1;
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   background-color: #1e40af;
