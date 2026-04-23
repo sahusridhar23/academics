@@ -146,9 +146,7 @@ private static String username = "postgres";
 private static String password = "your_password_here";
 ```
 
-> ⚠️ **Security Warning:** Credentials are hardcoded directly in `DBconnection.java`. Do not commit this file with real passwords to a public repository.
-
-After updating, recompile the file and place the `.class` output inside `WEB-INF/classes/`.
+> ⚠️ **Security Warning:** Credentials are hardcoded directly in `DBconnection.java`. Make sure you update the url and credentials
 
 ---
 
