@@ -1,92 +1,243 @@
-# Complaint Portal
+# 🎓 Silicon University — Complaint Management Portal
 
-A web-based complaint management system built with Java Servlets and Tomcat. This application allows users to submit complaints and view existing complaints through an intuitive web interface.
-
----
-
-## Prerequisites
-
-Ensure you have the following installed on your system:
-
-| Requirement    | Version            |
-| -------------- | ------------------ |
-| Java JDK       | 8 or above         |
-| Apache Tomcat  | 9 or 10            |
-| Web Browser    | Any modern browser |
-| IDE (Optional) | VS Code / IntelliJ |
+A lightweight web application that allows students and staff of Silicon University to submit and view complaints across various campus categories. Built with Java Servlets, JDBC, and a plain HTML/CSS/JS frontend.
 
 ---
 
-## Setup Instructions
+## 📋 Table of Contents
 
-### Step 1: Download and Extract the Project
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Project Structure](#-project-structure)
+- [Database Setup](#-database-setup)
+- [DB Credentials Configuration](#-db-credentials-configuration)
+- [Running the Project](#-running-the-project)
+- [API Endpoints](#-api-endpoints)
+- [Dependencies (JARs)](#-dependencies-jars)
 
-Download the project ZIP file and extract it to your desired location.
+---
 
-### Step 2: Place Project in Tomcat
+## ✨ Features
 
-Move the project folder to your Tomcat webapps directory:
+- Submit a complaint with your name, category, title, and description
+- View all submitted complaints on a live dashboard
+- Complaint categories: Classroom, Hostel, Library, Cafeteria, IT/Network, Other
+- Status badges (Pending, In Progress, Resolved) on complaint cards
+- Clean responsive UI with Silicon University branding
+- REST-style JSON API backed by Java Servlets
+
+---
+
+## 🛠 Tech Stack
+
+| Layer      | Technology                          |
+|------------|-------------------------------------|
+| Backend    | Java Servlets (Jakarta EE)          |
+| Database   | PostgreSQL                          |
+| JDBC Driver| postgresql-42.7.10.jar              |
+| JSON       | Google Gson 2.10.1                  |
+| Frontend   | HTML5, CSS3, Vanilla JavaScript     |
+| Server     | Apache Tomcat 10+ (Jakarta EE)      |
+
+---
+
+## ✅ Prerequisites
+
+Make sure you have the following installed before running the project:
+
+| Tool              | Version / Notes                                      |
+|-------------------|------------------------------------------------------|
+| Java (JDK)        | Java 17 or higher (uses `record` keyword)            |
+| Apache Tomcat     | Version **10 or higher** (required for `jakarta.*` namespace) |
+| PostgreSQL        | Version 13 or higher                                 |
+| A browser         | Any modern browser (Chrome, Firefox, Edge)           |
+
+> ⚠️ **Important:** Do NOT use Tomcat 9 or lower — this project uses `jakarta.servlet.*` imports which are only available from Tomcat 10+.
+
+---
+
+## 📁 Project Structure
 
 ```
-<tomcat-folder>/webapps/
+Complaint_portal-main/
+│
+├── index.html                   # Dashboard — lists all complaints
+├── add.html                     # Form to submit a new complaint
+│
+├── css/
+│   └── style.css                # Shared stylesheet for all pages
+│
+├── images/
+│   └── sit.png                  # Silicon University logo
+│
+└── WEB-INF/
+    ├── src/                     # Java source files
+    │   ├── DBconnection.java    # ⚠️ DB credentials live here
+    │   ├── AddComplaintServlet.java
+    │   └── GetComplaintsServlet.java
+    │
+    ├── classes/                 # Compiled .class files
+    │   ├── DBconnection.class
+    │   ├── Complaint.class
+    │   ├── AddComplaintServlet.class
+    │   └── GetComplaintsServlet.class
+    │
+    └── lib/                     # Required JAR dependencies
+        ├── gson-2.10.1.jar
+        └── postgresql-42.7.10.jar
 ```
 
-**Example for Windows:**
+---
 
-```
-C:\tomcat\webapps\complaintportalm1
-```
+## 🗄 Database Setup
 
-### Step 3: Verify Required Dependencies
+### Step 1 — Start PostgreSQL
 
-Ensure the Gson library is present:
+Make sure your PostgreSQL server is running.
 
-```
-WEB-INF/lib/gson-2.10.1.jar
-```
+### Step 2 — Create Database and Table
 
-If missing, download [Gson 2.10.1](https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar) and place it in the `WEB-INF/lib/` directory.
-
-### Step 4: Compile Java Servlets
-
-Open a terminal/command prompt and navigate to the project's `WEB-INF/src` directory:
+Run the provided `schema.sql` file:
 
 ```bash
-cd WEB-INF/src
+psql -U postgres -f schema.sql
 ```
 
-Compile all Java files:
+Or manually run these commands in `psql`:
 
-**Windows:**
+```sql
+CREATE DATABASE complaints;
+
+\c complaints
+
+CREATE TABLE complaints (
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR(100)  NOT NULL,
+    category    VARCHAR(50)   NOT NULL,
+    title       VARCHAR(120)  NOT NULL,
+    description VARCHAR(1000) NOT NULL,
+    status      VARCHAR(20)   DEFAULT 'Pending',
+    created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Step 3 — (Optional) Load Sample Data
 
 ```bash
-javac -cp "C:\tomcat\lib\servlet-api.jar;C:\tomcat\webapps\complaintportalm1\WEB-INF\lib\gson-2.10.1.jar" -d "C:\tomcat\webapps\complaintportalm1\WEB-INF\classes" *.java
+psql -U postgres -d complaints -f sample_data.sql
 ```
 
-**Linux/Mac:**
+---
+
+## 🔑 DB Credentials Configuration
+
+Open the file:
+
+```
+WEB-INF/src/DBconnection.java
+```
+
+Update the following three lines to match your PostgreSQL setup:
+
+```java
+private static String url      = "jdbc:postgresql://localhost:5432/complaints";
+private static String username = "postgres";
+private static String password = "your_password_here";
+```
+
+> ⚠️ **Security Warning:** Credentials are hardcoded directly in `DBconnection.java`. Do not commit this file with real passwords to a public repository.
+
+After updating, recompile the file and place the `.class` output inside `WEB-INF/classes/`.
+
+---
+
+## 🚀 Running the Project
+
+### Step 1 — Clone the Repository
 
 ```bash
-javac -cp "~/tomcat/lib/servlet-api.jar:~/tomcat/webapps/complaintportalm1/WEB-INF/lib/gson-2.10.1.jar" -d "~/tomcat/webapps/complaintportalm1/WEB-INF/classes" *.java
+git clone https://github.com/your-username/Complaint_portal.git
+cd Complaint_portal-main
 ```
 
-### Step 5: Start Tomcat Server
+### Step 2 — Compile the Java Source Files
 
-**Windows:**
+From the project root, compile all `.java` files in `WEB-INF/src/` and output to `WEB-INF/classes/`:
 
 ```bash
-<tomcat-folder>\bin\startup.bat
+javac -cp "WEB-INF/lib/*:/path/to/tomcat/lib/servlet-api.jar" \
+      -d WEB-INF/classes \
+      WEB-INF/src/*.java
 ```
 
-**Linux/Mac:**
+> Replace `/path/to/tomcat/` with your actual Tomcat installation directory (e.g., `/opt/tomcat` or `C:\tomcat`).
+
+### Step 3 — Deploy to Tomcat
+
+Copy (or move) the entire project folder into Tomcat's `webapps/` directory and rename it to match the context path used in the frontend JS:
 
 ```bash
-<tomcat-folder>/bin/startup.sh
+cp -r Complaint_portal-main /path/to/tomcat/webapps/complaintportalm1
 ```
 
-### Step 6: Access the Application
+The folder must be named **`complaintportalm1`** because the frontend JavaScript calls:
+```
+http://localhost:8080/complaintportalm1/complaints
+http://localhost:8080/complaintportalm1/addComplaint
+```
 
-Open your web browser and navigate to:
+### Step 4 — Start Tomcat
+
+```bash
+# Linux / macOS
+/path/to/tomcat/bin/startup.sh
+
+# Windows
+\path\to\tomcat\bin\startup.bat
+```
+
+### Step 5 — Open in Browser
 
 ```
-http://localhost:8080/complaintportalm1
+http://localhost:8080/complaintportalm1/index.html
 ```
+
+---
+
+## 🔌 API Endpoints
+
+| Method | Endpoint           | Description                      |
+|--------|--------------------|----------------------------------|
+| GET    | `/complaints`      | Returns all complaints as JSON   |
+| POST   | `/addComplaint`    | Submits a new complaint          |
+
+**POST `/addComplaint` — Form Parameters:**
+
+| Parameter     | Type   | Max Length | Required |
+|---------------|--------|------------|----------|
+| `name`        | String | 100        | ✅       |
+| `category`    | String | 50         | ✅       |
+| `title`       | String | 120        | ✅       |
+| `description` | String | 1000       | ✅       |
+
+---
+
+## 📦 Dependencies (JARs)
+
+Both JARs are already included in `WEB-INF/lib/` — no manual download needed.
+
+| JAR File                    | Purpose                          |
+|-----------------------------|----------------------------------|
+| `gson-2.10.1.jar`           | Java object ↔ JSON conversion    |
+| `postgresql-42.7.10.jar`    | PostgreSQL JDBC driver           |
+
+You will also need `servlet-api.jar` (or `jakarta.servlet-api`) at **compile time** only — this is provided by Tomcat and should NOT be placed in `WEB-INF/lib/`.
+
+---
+
+## 👥 Developers
+
+- [sahusridhar23](https://github.com/sahusridhar23)  
+- [AmlanSP](https://github.com/AmlanSP)
+- [Ayush-2604](https://github.com/Ayush-2604)  
