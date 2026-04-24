@@ -40,7 +40,7 @@
           <p><b>Category:</b> Classroom</p>
           <p><b>Description:</b> Chair is broken</p>
           <span class="status status-pending">Pending</span>
-          <button class="btn">delete</button> 
+          <button class="delete-btn">🗑</button>
         </article>
 
         <article class="complaint-card">
@@ -49,6 +49,7 @@
           <p><b>Category:</b> Classroom</p>
           <p><b>Description:</b> Chair is broken</p>
           <span class="status status-pending">Pending</span>
+          <button class="delete-btn">🗑</button>
         </article>
       </div>
     </main>
@@ -119,12 +120,18 @@
             else status.classList.add("status-pending");
             status.textContent = statusText;
 
+             // delete button (added to EVERY card)
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.textContent = "🗑";
+
             // append all elements
             card.appendChild(title);
             card.appendChild(name);
             card.appendChild(category);
             card.appendChild(description);
             card.appendChild(status);
+            card.appendChild(deleteBtn);
 
             container.appendChild(card);
           });
