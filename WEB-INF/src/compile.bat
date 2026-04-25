@@ -1,0 +1,1 @@
+javac -cp "C:\tomcat\lib\servlet-api.jar;C:\tomcat\webapps\complaintportalm1\WEB-INF\lib\*" -d "C:\tomcat\webapps\complaintportalm1\WEB-INF\classes" *.java
