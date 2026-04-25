@@ -26,9 +26,6 @@ public class AddComplaintServlet extends HttpServlet {
         String title = req.getParameter("title");
         String description = req.getParameter("description");
 
-        // create the object (like before)
-        Complaint complaint = new Complaint(name, category, title, description);
-
         // add the complaint
         try {
             Connection conn = DBconnection.getConnection();
@@ -48,13 +45,8 @@ public class AddComplaintServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // convert to json
-        String response = json.toJson(complaint);// complaint OBJ -> JSON
-
-        // send back the response
-        PrintWriter out = res.getWriter();
-        out.println(response);
-        out.flush();
+        res.setContentType("text/plain");
+        res.getWriter().print("success");
     }
 
 }

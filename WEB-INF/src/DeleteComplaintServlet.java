@@ -9,15 +9,14 @@ public class DeleteComplaintServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
 
-        String title = req.getParameter("title");
+        String id = req.getParameter("id");
 
         try {
             Connection conn = DBconnection.getConnection();
 
-            String sql = "DELETE FROM complaints WHERE title=?";
+            String sql = "DELETE FROM complaints WHERE id=?";
             PreparedStatement ps = conn.prepareStatement(sql);
-
-            ps.setString(1, title);
+            ps.setInt(1, Integer.parseInt(id));
 
             int rows = ps.executeUpdate();
 
