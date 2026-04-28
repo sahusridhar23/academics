@@ -109,16 +109,43 @@
             description.appendChild(descBold);
             description.appendChild(document.createTextNode(c.description));
 
-            // status
-            const status = document.createElement("span");
-            const statusText = c.status || "Pending";
-            status.classList.add("status");
-            const s = statusText.toLowerCase();
-            if (s.includes("resolved")) status.classList.add("status-resolved");
-            else if (s.includes("progress"))
+            // status dropdown
+           const status = document.createElement("select");
+
+            status.className = "status-select";
+            status.title = "Change Status";
+
+            const op1 = document.createElement("option");
+            op1.value = "Pending";
+            op1.textContent = "Pending";
+
+            const op2 = document.createElement("option");
+            op2.value = "In-Progress";
+            op2.textContent = "In-Progress";
+
+            const op3 = document.createElement("option");
+            op3.value = "Resolved";
+            op3.textContent = "Resolved";
+
+            status.appendChild(op1);
+            status.appendChild(op2);
+            status.appendChild(op3);
+
+            status.value = c.status || "Pending";
+
+            if (status.value === "Pending") {
+              status.classList.add("status-pending");
+            }
+            else if (status.value === "In-Progress") {
               status.classList.add("status-progress");
-            else status.classList.add("status-pending");
-            status.textContent = statusText;
+            }
+            else {
+              status.classList.add("status-resolved");
+            }
+
+            status.onchange = function () {
+              changeStatus(this);
+            };
 
             // delete button (added to EVERY card)
             const deleteBtn = document.createElement("button");
@@ -177,6 +204,22 @@
 
       // run when page loads
       loadComplaints();
+      function changeStatus(selectBox) {
+      const value = selectBox.value;
+      selectBox.classList.remove(
+        "status-pending",
+        "status-progress",
+        "status-resolved"
+      );
+
+      if (value === "Pending") {
+        selectBox.classList.add("status-pending");
+      } else if (value === "In-Progress") {
+        selectBox.classList.add("status-progress");
+      } else {
+        selectBox.classList.add("status-resolved");
+      }
+    }
     </script>
   </body>
 </html>
