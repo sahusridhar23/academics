@@ -143,9 +143,33 @@
               status.classList.add("status-resolved");
             }
 
-            status.onchange = function () {
-              changeStatus(this);
-            };
+            status.onchange = async function () {
+            changeStatus(this);
+
+            try {
+                const response = await fetch(
+                  "http://localhost:8080/complaintportalm1/UpdateComplaintServlet",
+                  {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                      },
+                      body: "id=" + c.id + "&status=" + this.value
+                  }
+                );
+
+                const result = await response.text();
+
+                if (result !== "success") {
+                  alert("Status update failed");
+                }
+
+            } catch (error) {
+                console.log(error);
+                alert("Error updating status");
+            }
+          };
+
 
             // delete button (added to EVERY card)
             const deleteBtn = document.createElement("button");
