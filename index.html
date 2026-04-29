@@ -61,6 +61,9 @@
         <button class="btn-reset" id="reset-filters">Reset Filters</button>
       </div>
 
+      <!-- COMPLAINT COUNT -->
+      <p class="filter-count" id="filter-count"></p>
+
       <!-- COMPLAINT CONTAINER -->
       <div class="complaint-list">
         <article class="complaint-card">
@@ -91,118 +94,175 @@
 
     <!-- JS -->
     <script>
+      let allComplaints = [];
+
+      //API CALL
       async function loadComplaints() {
         try {
           const response = await fetch(
             "http://localhost:8080/complaintportalm1/complaints",
           );
 
-          // convert response → JSON
-          const data = await response.json();
+          // convert response → JSON & store in list
+          allComplaints = await response.json();
+          applyFilters();
 
-          console.log(data);
-
-          // select container
-          const container = document.querySelector(".complaint-list");
-
-          // clear old content
-          container.replaceChildren();
-
-          // loop through complaints
-          data.forEach((c) => {
-            const card = document.createElement("article");
-            card.classList.add("complaint-card");
-
-            // title
-            const title = document.createElement("h3");
-            title.textContent = c.title;
-
-            // name
-            const name = document.createElement("p");
-            const nameBold = document.createElement("b");
-            nameBold.textContent = "Name: ";
-            name.appendChild(nameBold);
-            name.appendChild(document.createTextNode(c.name));
-
-            // category
-            const category = document.createElement("p");
-            const categoryBold = document.createElement("b");
-            categoryBold.textContent = "Category: ";
-            category.appendChild(categoryBold);
-            category.appendChild(document.createTextNode(c.category));
-
-            // description
-            const description = document.createElement("p");
-            const descBold = document.createElement("b");
-            descBold.textContent = "Description: ";
-            description.appendChild(descBold);
-            description.appendChild(document.createTextNode(c.description));
-
-            // status
-            const status = document.createElement("span");
-            const statusText = c.status || "Pending";
-            status.classList.add("status");
-            const s = statusText.toLowerCase();
-            if (s.includes("resolved")) status.classList.add("status-resolved");
-            else if (s.includes("progress"))
-              status.classList.add("status-progress");
-            else status.classList.add("status-pending");
-            status.textContent = statusText;
-
-            // delete button (added to EVERY card)
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "delete-btn";
-
-            const icon = document.createElement("span");
-            icon.textContent = "🗑";
-
-            deleteBtn.appendChild(icon);
-
-            deleteBtn.onclick = async function () {
-              const confirmDelete = confirm("Are you sure you want to delete?");
-
-              if (!confirmDelete) {
-                return;
-              }
-
-              try {
-                const response = await fetch(
-                  "http://localhost:8080/complaintportalm1/DeleteComplaintServlet",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: "id=" + c.id,
-                  },
-                );
-
-                const result = await response.text();
-
-                if (result === "success") {
-                  loadComplaints();
-                } else {
-                  alert("Delete failed");
-                }
-              } catch (error) {
-                console.log(error);
-                alert("Error deleting complaint");
-              }
-            };
-            // append all elements
-            card.appendChild(title);
-            card.appendChild(name);
-            card.appendChild(category);
-            card.appendChild(description);
-            card.appendChild(status);
-            card.appendChild(deleteBtn);
-
-            container.appendChild(card);
-          });
+          console.log(allComplaints);
         } catch (error) {
           console.error("Error fetching complaints:", error);
         }
       }
+
+      // RENDER FUNCTION
+      function renderComplaints(data) {
+        // select container
+        const container = document.querySelector(".complaint-list");
+
+        // clear old content
+        container.replaceChildren();
+
+        // loop through complaints
+        data.forEach((c) => {
+          const card = document.createElement("article");
+          card.classList.add("complaint-card");
+
+          // title
+          const title = document.createElement("h3");
+          title.textContent = c.title;
+
+          // name
+          const name = document.createElement("p");
+          const nameBold = document.createElement("b");
+          nameBold.textContent = "Name: ";
+          name.appendChild(nameBold);
+          name.appendChild(document.createTextNode(c.name));
+
+          // category
+          const category = document.createElement("p");
+          const categoryBold = document.createElement("b");
+          categoryBold.textContent = "Category: ";
+          category.appendChild(categoryBold);
+          category.appendChild(document.createTextNode(c.category));
+
+          // description
+          const description = document.createElement("p");
+          const descBold = document.createElement("b");
+          descBold.textContent = "Description: ";
+          description.appendChild(descBold);
+          description.appendChild(document.createTextNode(c.description));
+
+          // status
+          const status = document.createElement("span");
+          const statusText = c.status || "Pending";
+          status.classList.add("status");
+          const s = statusText.toLowerCase();
+          if (s.includes("resolved")) status.classList.add("status-resolved");
+          else if (s.includes("progress"))
+            status.classList.add("status-progress");
+          else status.classList.add("status-pending");
+          status.textContent = statusText;
+
+          // delete button (added to EVERY card)
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-btn";
+
+          const icon = document.createElement("span");
+          icon.textContent = "🗑";
+
+          deleteBtn.appendChild(icon);
+
+          deleteBtn.onclick = async function () {
+            const confirmDelete = confirm("Are you sure you want to delete?");
+
+            if (!confirmDelete) {
+              return;
+            }
+
+            try {
+              const response = await fetch(
+                "http://localhost:8080/complaintportalm1/DeleteComplaintServlet",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: "id=" + c.id,
+                },
+              );
+
+              const result = await response.text();
+
+              if (result === "success") {
+                loadComplaints();
+              } else {
+                alert("Delete failed");
+              }
+            } catch (error) {
+              console.log(error);
+              alert("Error deleting complaint");
+            }
+          };
+          // append all elements
+          card.appendChild(title);
+          card.appendChild(name);
+          card.appendChild(category);
+          card.appendChild(description);
+          card.appendChild(status);
+          card.appendChild(deleteBtn);
+
+          container.appendChild(card);
+
+          // FILTER COUNT
+          const countEl = document.querySelector("#filter-count");
+
+          const total = allComplaints.length;
+          const shown = data.length;
+
+          if (shown === total) {
+            countEl.textContent = `Showing all ${total} complaint${total !== 1 ? "s" : ""}`;
+          } else {
+            countEl.textContent = `Showing ${shown} of ${total} complaint${total !== 1 ? "s" : ""}`;
+          }
+        });
+      }
+
+      // FILTER FUNCTION
+      function applyFilters() {
+        const statusFilter = document
+          .querySelector("#filter-status")
+          .value.toLowerCase();
+        const categoryFilter = document
+          .querySelector("#filter-category")
+          .value.toLowerCase();
+
+        const filtered = allComplaints.filter((c) => {
+          const matchStatus =
+            !statusFilter ||
+            (c.status || "pending").toLowerCase() === statusFilter;
+
+          const matchCategory =
+            !categoryFilter ||
+            (c.category || "").toLowerCase() === categoryFilter;
+
+          return matchStatus && matchCategory;
+        });
+
+        renderComplaints(filtered);
+      }
+
+      //EVENT LISTENERS
+      document
+        .querySelector("#filter-status")
+        .addEventListener("change", applyFilters);
+      document
+        .querySelector("#filter-category")
+        .addEventListener("change", applyFilters);
+
+      document.querySelector("#reset-filters").addEventListener("click", () => {
+        document.querySelector("#filter-status").value = "";
+        document.querySelector("#filter-category").value = "";
+        applyFilters();
+      });
 
       // run when page loads
       loadComplaints();
