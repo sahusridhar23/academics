@@ -121,18 +121,24 @@
             },
           );
 
-          const data = await response.json();
+          const data = await response.text();
           console.log("Added:", data);
 
-          // success message using DOM
+          if (data.trim() === "success") {
+
           const msg = document.createElement("p");
           msg.textContent = "Complaint submitted successfully!";
           msg.style.color = "green";
 
           form.appendChild(msg);
 
-          // clear form
           form.reset();
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+
+        }
         } catch (error) {
           console.error("Error submitting complaint:", error);
         }

@@ -33,6 +33,38 @@
         Every complaint submitted by Silicon University &amp; staff.
       </p>
 
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="filter-status">Status</label>
+          <select id="filter-status">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In-Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-category">Category</label>
+          <select id="filter-category">
+            <option value="">All Categories</option>
+            <option value="Classroom">Classroom</option>
+            <option value="Hostel">Hostel</option>
+            <option value="Cafeteria">Cafeteria</option>
+            <option value="Library">Library</option>
+            <option value="Transport">Transport</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <button class="btn-reset" id="reset-filters">Reset Filters</button>
+      </div>
+
+      <!-- COMPLAINT COUNT -->
+      <p class="filter-count" id="filter-count"></p>
+
+      <!-- COMPLAINT CONTAINER -->
       <div class="complaint-list">
         <article class="complaint-card">
           <h3>Broken Chair</h3>
@@ -40,6 +72,7 @@
           <p><b>Category:</b> Classroom</p>
           <p><b>Description:</b> Chair is broken</p>
           <span class="status status-pending">Pending</span>
+          <button class="delete-btn">🗑</button>
         </article>
 
         <article class="complaint-card">
@@ -48,92 +81,254 @@
           <p><b>Category:</b> Classroom</p>
           <p><b>Description:</b> Chair is broken</p>
           <span class="status status-pending">Pending</span>
+          <button class="delete-btn">🗑</button>
         </article>
       </div>
     </main>
 
     <!-- FOOTER -->
     <footer class="site-footer">
-      <h4>2026 Silicon University | m1 complaint portal</h4>
+      <h4>2026 Silicon University | m2 complaint portal</h4>
       <p><em>&copy; All rights reserved</em></p>
     </footer>
 
     <!-- JS -->
     <script>
+      let allComplaints = [];
+
+      //API CALL
       async function loadComplaints() {
         try {
           const response = await fetch(
             "http://localhost:8080/complaintportalm1/complaints",
           );
 
-          // convert response → JSON
-          const data = await response.json();
+          // convert response → JSON & store in list
+          allComplaints = await response.json();
+          applyFilters();
 
-          console.log(data);
-
-          // select container
-          const container = document.querySelector(".complaint-list");
-
-          // clear old content
-          container.replaceChildren();
-
-          // loop through complaints
-          data.forEach((c) => {
-            const card = document.createElement("article");
-            card.classList.add("complaint-card");
-
-            // title
-            const title = document.createElement("h3");
-            title.textContent = c.title;
-
-            // name
-            const name = document.createElement("p");
-            const nameBold = document.createElement("b");
-            nameBold.textContent = "Name: ";
-            name.appendChild(nameBold);
-            name.appendChild(document.createTextNode(c.name));
-
-            // category
-            const category = document.createElement("p");
-            const categoryBold = document.createElement("b");
-            categoryBold.textContent = "Category: ";
-            category.appendChild(categoryBold);
-            category.appendChild(document.createTextNode(c.category));
-
-            // description
-            const description = document.createElement("p");
-            const descBold = document.createElement("b");
-            descBold.textContent = "Description: ";
-            description.appendChild(descBold);
-            description.appendChild(document.createTextNode(c.description));
-
-            // status
-            const status = document.createElement("span");
-            const statusText = c.status || "Pending";
-            status.classList.add("status");
-            const s = statusText.toLowerCase();
-            if (s.includes("resolved")) status.classList.add("status-resolved");
-            else if (s.includes("progress"))
-              status.classList.add("status-progress");
-            else status.classList.add("status-pending");
-            status.textContent = statusText;
-
-            // append all elements
-            card.appendChild(title);
-            card.appendChild(name);
-            card.appendChild(category);
-            card.appendChild(description);
-            card.appendChild(status);
-
-            container.appendChild(card);
-          });
+          console.log(allComplaints);
         } catch (error) {
           console.error("Error fetching complaints:", error);
         }
       }
 
+      // RENDER FUNCTION
+      function renderComplaints(data) {
+        // select container
+        const container = document.querySelector(".complaint-list");
+
+        // clear old content
+        container.replaceChildren();
+
+        // loop through complaints
+        data.forEach((c) => {
+          const card = document.createElement("article");
+          card.classList.add("complaint-card");
+
+          // title
+          const title = document.createElement("h3");
+          title.textContent = c.title;
+
+          // name
+          const name = document.createElement("p");
+          const nameBold = document.createElement("b");
+          nameBold.textContent = "Name: ";
+          name.appendChild(nameBold);
+          name.appendChild(document.createTextNode(c.name));
+
+          // category
+          const category = document.createElement("p");
+          const categoryBold = document.createElement("b");
+          categoryBold.textContent = "Category: ";
+          category.appendChild(categoryBold);
+          category.appendChild(document.createTextNode(c.category));
+
+          // description
+          const description = document.createElement("p");
+          const descBold = document.createElement("b");
+          descBold.textContent = "Description: ";
+          description.appendChild(descBold);
+          description.appendChild(document.createTextNode(c.description));
+
+          // status dropdown
+          const status = document.createElement("select");
+
+          status.className = "status-select";
+          status.title = "Change Status";
+
+          const op1 = document.createElement("option");
+          op1.value = "Pending";
+          op1.textContent = "Pending";
+
+          const op2 = document.createElement("option");
+          op2.value = "In-Progress";
+          op2.textContent = "In-Progress";
+
+          const op3 = document.createElement("option");
+          op3.value = "Resolved";
+          op3.textContent = "Resolved";
+
+          status.appendChild(op1);
+          status.appendChild(op2);
+          status.appendChild(op3);
+
+          status.value = c.status || "Pending";
+
+          if (status.value === "Pending") {
+            status.classList.add("status-pending");
+          } else if (status.value === "In-Progress") {
+            status.classList.add("status-progress");
+          } else {
+            status.classList.add("status-resolved");
+          }
+
+          status.onchange = async function () {
+            changeStatus(this);
+
+            try {
+              const response = await fetch(
+                "http://localhost:8080/complaintportalm1/UpdateComplaintServlet",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: "id=" + c.id + "&status=" + this.value,
+                },
+              );
+
+              const result = await response.text();
+
+              if (result !== "success") {
+                alert("Status update failed");
+              }
+            } catch (error) {
+              console.log(error);
+              alert("Error updating status");
+            }
+          };
+
+          // delete button (added to EVERY card)
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-btn";
+
+          const icon = document.createElement("span");
+          icon.textContent = "🗑";
+
+          deleteBtn.appendChild(icon);
+
+          deleteBtn.onclick = async function () {
+            const confirmDelete = confirm("Are you sure you want to delete?");
+
+            if (!confirmDelete) {
+              return;
+            }
+
+            try {
+              const response = await fetch(
+                "http://localhost:8080/complaintportalm1/DeleteComplaintServlet",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: "id=" + c.id,
+                },
+              );
+
+              const result = await response.text();
+
+              if (result === "success") {
+                loadComplaints();
+              } else {
+                alert("Delete failed");
+              }
+            } catch (error) {
+              console.log(error);
+              alert("Error deleting complaint");
+            }
+          };
+          // append all elements
+          card.appendChild(title);
+          card.appendChild(name);
+          card.appendChild(category);
+          card.appendChild(description);
+          card.appendChild(status);
+          card.appendChild(deleteBtn);
+
+          container.appendChild(card);
+
+          // FILTER COUNT
+          const countEl = document.querySelector("#filter-count");
+
+          const total = allComplaints.length;
+          const shown = data.length;
+
+          if (shown === total) {
+            countEl.textContent = `Showing all ${total} complaint${total !== 1 ? "s" : ""}`;
+          } else {
+            countEl.textContent = `Showing ${shown} of ${total} complaint${total !== 1 ? "s" : ""}`;
+          }
+        });
+      }
+
+      // FILTER FUNCTION
+      function applyFilters() {
+        const statusFilter = document
+          .querySelector("#filter-status")
+          .value.toLowerCase();
+        const categoryFilter = document
+          .querySelector("#filter-category")
+          .value.toLowerCase();
+
+        const filtered = allComplaints.filter((c) => {
+          const matchStatus =
+            !statusFilter ||
+            (c.status || "pending").toLowerCase() === statusFilter;
+
+          const matchCategory =
+            !categoryFilter ||
+            (c.category || "").toLowerCase() === categoryFilter;
+
+          return matchStatus && matchCategory;
+        });
+
+        renderComplaints(filtered);
+      }
+
+      //EVENT LISTENERS
+      document
+        .querySelector("#filter-status")
+        .addEventListener("change", applyFilters);
+      document
+        .querySelector("#filter-category")
+        .addEventListener("change", applyFilters);
+
+      document.querySelector("#reset-filters").addEventListener("click", () => {
+        document.querySelector("#filter-status").value = "";
+        document.querySelector("#filter-category").value = "";
+        applyFilters();
+      });
+
       // run when page loads
       loadComplaints();
+      function changeStatus(selectBox) {
+        const value = selectBox.value;
+        selectBox.classList.remove(
+          "status-pending",
+          "status-progress",
+          "status-resolved",
+        );
+
+        if (value === "Pending") {
+          selectBox.classList.add("status-pending");
+        } else if (value === "In-Progress") {
+          selectBox.classList.add("status-progress");
+        } else {
+          selectBox.classList.add("status-resolved");
+        }
+      }
     </script>
   </body>
 </html>

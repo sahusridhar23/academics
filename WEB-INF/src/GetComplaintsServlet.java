@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-record Complaint(String name, String category, String title, String description) {
+record Complaint(int id, String name, String category, String title, String description, String status) {
 }
 
 @WebServlet("/complaints")
@@ -32,17 +32,19 @@ public class GetComplaintsServlet extends HttpServlet {
         try {
             Connection conn = DBconnection.getConnection();
 
-            String sql = "SELECT name, category, title, description FROM complaints";
+            String sql = "SELECT id, name, category, title, description,status FROM complaints";
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 Complaint c = new Complaint(
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("category"),
                         rs.getString("title"),
-                        rs.getString("description"));
+                        rs.getString("description"),
+                        rs.getString("status"));
                 complaints.add(c);
             }
 
